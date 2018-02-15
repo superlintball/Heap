@@ -113,22 +113,13 @@ int main()
 			{
 				if(isdigit(list[i]))
 				{
-					//figure out the length of the integer
+					//isolate the number into a separate char pointer
 					int start = i;
-					int length = 1;
-					while(list[i+1] != ' ' && i <strlen(list))
-					{
-						length++;
-						i++;
-					}
-					
-					//isolate the integer into a char pointer
 					char* number;
-					for(int j = 0; j < length; j++)
-					{
-						number[j] = list[start+j];
-					}
-					number[length] = '\0';
+					do number[i-start] = list[i];
+					while(list[++i] != ' ' && i < strlen(list));
+					number[i-start] = '\0';
+					
 					//convert the isolated char pointer into an integer
 					int toAdd = atoi(number);
 					add(heap, toAdd);
