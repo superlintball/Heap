@@ -1,3 +1,9 @@
+/* Author: Raveen Karnik
+ * Date: February 16, 2018
+ * This program asks the user to input a series of integers (up to 100) between 1 and 1000,
+ * either manually or from a file, and creates a max heap from the data. It can then either
+ * print out a visualization of the max heap or a list of the data from largest to smallest. */
+
 #include <iostream>
 #include <cstring>
 #include <stdlib.h>
@@ -63,9 +69,63 @@ void add(int heap[], int toAdd)
 	}
 }
 
+//organize the heap, starting at the top, recursively
+void heapify(int heap[], int place = 1)
+{
+	int temp = heap[place-1];
+	if(temp < heap[place*2-1] || temp < heap[place*2])
+	{
+		if(heap[place*2-1] < heap[place*2])
+		{
+			heap[place-1] = heap[place*2];
+			heap[place*2] = temp;
+			heapify(heap, place*2+1);
+		}
+		else
+		{
+			heap[place-1] = heap[place*2-1];
+			heap[place*2-1] = temp;
+			heapify(heap, place*2);
+		}
+	}
+}
+
+//print out the organized list
+void print(int heap[])
+{
+	//while there are numbers in the heap
+	while(heap[0] != 0)
+	{
+		//print the topmost number, which is the max
+		int place = -1;
+		cout << heap[0] << " ";
+		
+		//find the last number in the list
+		for(int i = 0; i < 100; i++)
+		{
+			if(heap[i] == 0)
+			{
+				place = i;
+				break;
+			}
+		}
+		if(place == -1)
+			place = 100;
+		
+		//move the last number to the top and erase the top
+		heap[0] = heap[place-1];
+		heap[place-1] = 0;
+		
+		//reorganize the heap
+		heapify(heap);
+	}
+}
+
 int main()
 {
 	int heap[100] = {0};
+	
+	bool fileFound = true;
 	
 	//prompt the user for how numbers will be entered
 	cout << "Would you like to enter numbers via MANUAL input or from FILE? \n";
@@ -87,7 +147,6 @@ int main()
 		
 		visualize(heap);
 	}
-	
 	//if the user wants to enter numbers from a file
 	else if(!strcmp(input, "FILE") || !strcmp(input, "file"))
 	{
@@ -95,7 +154,7 @@ int main()
 		char* list = new char[512];
 		
 		//prompt the user for the name of the file
-		cout << "Enter the name of the file.\n";
+		cout << "\nEnter the name of the file.\n";
 		cin.get();
 		cin.get(file, 32);
 		cin.get();
@@ -107,7 +166,7 @@ int main()
 			//extract the text from the file
 			stream.getline(list, 512);
 			stream.close();
-			cout << "list: " << list << endl;
+			cout << endl << list << endl;
 			//extract the numbers from the text
 			for(int i = 0; i < strlen(list); i++)
 			{
@@ -115,7 +174,7 @@ int main()
 				{
 					//isolate the number into a separate char pointer
 					int start = i;
-					char* number;
+					char* number = new char[5];
 					do number[i-start] = list[i];
 					while(list[++i] != ' ' && i < strlen(list));
 					number[i-start] = '\0';
@@ -129,9 +188,43 @@ int main()
 		else
 		{
 			cout << "File not found\n";
+			fileFound = false;
 		}
-		
-		visualize(heap);
+	}
+	
+	//if the user entered neither option, throw an error.
+	else
+	{
+		cout << "Sorry I couldn't understand that.\n";
+		fileFound = false;
+	}
+	
+	//print out either the visalization, the organized list, or both
+	if(fileFound)
+	{
+		char* info = new char[8];
+		cout << "\nWould you like to see the TREE, the LIST from largest to smallest, or BOTH?\n";
+		cin >> info;
+		cout << endl;
+		if(!strcmp(info, "TREE") || !strcmp(info, "tree"))
+		{
+			visualize(heap);
+		}
+		else if(!strcmp(info, "LIST") || !strcmp(info, "list"))
+		{
+			print(heap);
+		}
+		else if(!strcmp(info, "BOTH") || !strcmp(info, "both"))
+		{
+			cout << "Tree:\n";
+			visualize(heap);
+			cout << "\nList:\n";
+			print(heap);	
+		}
+		else
+		{
+			cout << "Sorry I couldn't understand that.\n";
+		}
 	}
 	return 0;
 }
