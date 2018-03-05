@@ -12,8 +12,8 @@
 using namespace std;
 
 //print out the tree in a simple form
-void visualize(int heap[], int place = 1, int depth = 0)
-{
+void visualize(int heap[], int total, int place = 1, int depth = 0)
+{	
 	for(int i = 0; i < depth; i++)
 	{
 		cout << "   ";
@@ -22,13 +22,13 @@ void visualize(int heap[], int place = 1, int depth = 0)
 	cout << heap[place-1] << endl;
 	
 	int next = place * 2;
-	if(heap[next-1] != 0)
+	if(heap[next] != 0 && next < total)
 	{
-		visualize(heap, next, depth+1);
+		visualize(heap, total, next+1, depth+1);
 	}
-	if(heap[next] != 0)
+	if(heap[next-1] != 0 && next < total)
 	{
-		visualize(heap, next+1, depth+1);
+		visualize(heap, total, next, depth+1);
 	}
 }
 
@@ -124,6 +124,7 @@ void print(int heap[])
 int main()
 {
 	int heap[100] = {0};
+	int numbers = 0;
 	
 	bool fileFound = true;
 	
@@ -142,10 +143,11 @@ int main()
 		{
 			int toAdd = atoi(input);
 			add(heap, toAdd);
+			numbers++;
 			cin >> input;
 		}
 		
-		visualize(heap);
+		visualize(heap, numbers);
 	}
 	//if the user wants to enter numbers from a file
 	else if(!strcmp(input, "FILE") || !strcmp(input, "file"))
@@ -182,6 +184,7 @@ int main()
 					//convert the isolated char pointer into an integer
 					int toAdd = atoi(number);
 					add(heap, toAdd);
+					numbers++;
 				}
 			}
 		}
@@ -208,7 +211,7 @@ int main()
 		cout << endl;
 		if(!strcmp(info, "TREE") || !strcmp(info, "tree"))
 		{
-			visualize(heap);
+			visualize(heap, numbers);
 		}
 		else if(!strcmp(info, "LIST") || !strcmp(info, "list"))
 		{
@@ -217,7 +220,7 @@ int main()
 		else if(!strcmp(info, "BOTH") || !strcmp(info, "both"))
 		{
 			cout << "Tree:\n";
-			visualize(heap);
+			visualize(heap, numbers);
 			cout << "\nList:\n";
 			print(heap);	
 		}
